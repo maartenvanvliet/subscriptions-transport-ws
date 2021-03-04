@@ -169,11 +169,10 @@ defmodule SubscriptionsTransportWS.SocketTest do
       connect_info: connect_info
     }
 
-    case  handler.connect(map) do
-       {:ok, state} -> handler.init(state)
-       error -> error
+    case handler.connect(map) do
+      {:ok, state} -> handler.init(state)
+      error -> error
     end
-
   end
 
   @doc """
