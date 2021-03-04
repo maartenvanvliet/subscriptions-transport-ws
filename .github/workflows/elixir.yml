@@ -19,6 +19,7 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
+          experimental-otp: true
       - name: Install Dependencies
         run: mix deps.get && mix deps.unlock --check-unused
       - name: Check formatting
