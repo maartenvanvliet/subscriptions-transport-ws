@@ -1,11 +1,11 @@
-defmodule SubscriptionsTransportWs.MixProject do
+defmodule SubscriptionsTransportWS.MixProject do
   use Mix.Project
 
   @url "https://github.com/maartenvanvliet/subscriptions-transport-ws"
   def project do
     [
       app: :subscriptions_transport_ws,
-      version: "0.1.0",
+      version: "1.0.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -20,9 +20,10 @@ defmodule SubscriptionsTransportWs.MixProject do
         files: ~w(LICENSE README.md lib mix.exs)
       ],
       docs: [
-        main: "SubscriptionsTransportWs.Socket",
+        main: "SubscriptionsTransportWS.Socket",
         canonical: "http://hexdocs.pm/quarto",
-        source_url: @url
+        source_url: @url,
+        nest_modules_by_prefix: [SubscriptionsTransportWS]
       ]
     ]
   end

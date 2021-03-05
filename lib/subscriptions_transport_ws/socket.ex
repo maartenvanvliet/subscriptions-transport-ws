@@ -9,13 +9,26 @@ defmodule SubscriptionsTransportWS.Socket do
 
   alias SubscriptionsTransportWS.OperationMessage
   alias __MODULE__
+  @typedoc """
 
+  When using this module there are several options available
+
+   * `json_module` - defaults to Jason
+   * `schema` - refers to the Absinthe schema (required)
+   * `pipeline` - refers to the Absinthe pipeline to use, defaults to `{SubscriptionsTransportWS.Socket, :default_pipeline}`
+   * `keep_alive` period in ms to send keep alive messages over the socket, defaults to 10000
+
+  ## Example
+
+  use SubscriptionsTransportWS.Socket, schema: App.GraphqlSchema, keep_alive: 1000
+
+  """
   defstruct [
     :handler,
     :pubsub_server,
     :endpoint,
     :json_module,
-    :keep_alive,
+    keep_alive: 10000,
     serializer: Phoenix.Socket.V2.JSONSerializer,
     operations: %{},
     assigns: %{}
@@ -34,11 +47,45 @@ defmodule SubscriptionsTransportWS.Socket do
 
   @initial_keep_alive_wait 1
 
+
+  @doc """
+  Receives the socket params and authenticates the connection.
+
+  ## Socket params and assigns
+
+  Socket params are passed from the client and can
+  be used to verify and authenticate a user. After
+  verification, you can put default assigns into
+  the socket that will be set for all channels, ie
+
+      {:ok, assign(socket, :user_id, verified_user_id)}
+
+  To deny connection, return `:error`.
+
+  See `Phoenix.Token` documentation for examples in
+  performing token verification on connect.
+  """
   @callback connect(params :: map, Socket.t()) :: {:ok, Socket.t()} | :error
   @callback connect(params :: map, Socket.t(), connect_info :: map) :: {:ok, Socket.t()} | :error
 
-  @doc "hoi"
-  @callback gql_connection_init(params :: map, Socket.t()) ::
+  @doc """
+  Callback for the `connection_init` message.
+  The client sends this message after plain websocket connection to start
+  the communication with the server.
+
+  In the `subscriptions-transport-ws` protocol this is usually used to
+  set the user on the socket.
+
+  Should return `{:ok, socket}` on success, and `{:error, payload}` to deny.
+
+  Receives the a map of `connection_params`, see
+
+    * connectionParams in [Apollo javascript client](https://github.com/apollographql/subscriptions-transport-ws/blob/06b8eb81ba2b6946af4faf0ae6369767b31a2cc9/src/client.ts#L62)
+    * connectingPayload in [Apollo iOS client](https://github.com/apollographql/apollo-ios/blob/ca023e5854b5b78529eafe9006c6ce1e3c2db539/docs/source/api/ApolloWebSocket/classes/WebSocketTransport.md)
+
+  or similar in other clients.
+  """
+  @callback gql_connection_init(connection_params :: map, Socket.t()) ::
               {:ok, Socket.t()} | {:error, any}
 
   @optional_callbacks connect: 2, connect: 3
@@ -50,6 +97,7 @@ defmodule SubscriptionsTransportWS.Socket do
       alias SubscriptionsTransportWS.Socket
 
       @phoenix_socket_options unquote(opts)
+
       @behaviour Phoenix.Socket.Transport
       @behaviour SubscriptionsTransportWS.Socket
 
@@ -172,6 +220,18 @@ defmodule SubscriptionsTransportWS.Socket do
     end
   end
 
+  @doc """
+  Adds key value pairs to socket assigns.
+  A single key value pair may be passed, a keyword list or map
+  of assigns may be provided to be merged into existing socket
+  assigns.
+
+  ## Examples
+
+      iex> assign(socket, :name, "Elixir")
+      iex> assign(socket, name: "Elixir", logo: "💧")
+
+  """
   def assign(socket, key, value) do
     assign(socket, [{key, value}])
   end
@@ -208,7 +268,6 @@ defmodule SubscriptionsTransportWS.Socket do
       iex> Socket.assign_context(socket, current_user: user)
       %Socket{}
   """
-
   def assign_context(%Socket{assigns: %{absinthe: absinthe}} = socket, context) do
     context =
       absinthe
@@ -273,6 +332,9 @@ defmodule SubscriptionsTransportWS.Socket do
     :ok
   end
 
+  @doc """
+  Default pipeline to use for Absinthe graphql document execution
+  """
   def default_pipeline(schema, options) do
     schema
     |> Absinthe.Pipeline.for_document(options)

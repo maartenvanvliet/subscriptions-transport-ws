@@ -11,7 +11,7 @@ defmodule SubscriptionsTransportWS.OperationMessage do
   defstruct [:type, :id, :payload]
 
   @type t :: %__MODULE__{type: String.t(), id: String.t(), payload: any()}
-  alias SubscriptionsTransportWs.Error
+  alias SubscriptionsTransportWS.Error
 
   @message_types ~w(
     complete

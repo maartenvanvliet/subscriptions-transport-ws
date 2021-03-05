@@ -2,7 +2,7 @@ defmodule SubscriptionsTransportWS.SocketTest do
   @moduledoc """
   Helper module for testing socket behaviours.
 
-  Usage
+  ## Usage
 
   ```elixir
   # Example socket
@@ -79,8 +79,9 @@ defmodule SubscriptionsTransportWS.SocketTest do
   Helper function to build a socket.
 
   ## Example
+    ```elixir
     iex> socket = socket(GraphqlSocket, TestSchema)
-
+    ```
   """
   defmacro socket(socket_module, schema) do
     build_socket(socket_module, [], schema, __CALLER__)
@@ -133,21 +134,22 @@ defmodule SubscriptionsTransportWS.SocketTest do
   Helper function to receive subscription data over the socket
 
   ## Example
+  ```elixir
+  push_doc(socket, "mutation submitPost($title: String, $body: String){
+        submitPost(title: $title, body: $body){
+          id
+          body
+          title
 
-    push_doc(socket, "mutation submitPost($title: String, $body: String){
-          submitPost(title: $title, body: $body){
-            id
-            body
-            title
+        }
+      }", variables: %{title: "test title", body: "test body"})
 
-          }
-        }", variables: %{title: "test title", body: "test body"})
-
-    assert_receive_subscription %{
-      "data" => %{
-        "postAdded" => %{"body" => "test body", "id" => "1", "title" => "test title"}
-      }
+  assert_receive_subscription %{
+    "data" => %{
+      "postAdded" => %{"body" => "test body", "id" => "1", "title" => "test title"}
     }
+  }
+  ```
   """
   defmacro assert_receive_subscription(
              payload,
@@ -193,40 +195,45 @@ defmodule SubscriptionsTransportWS.SocketTest do
   When you push a query/mutation it will return with `{:ok, result, socket}`. For
   subscriptions it will return an `{:ok, socket}` tuple.
 
-  ## Example
-
-      # Push query over socket and receive response
-      push_doc(socket, "query {
-          posts {
-            id
-            body
-          }
-        }", variables: %{limit: 10})
-      {:ok, %{"data" => %{"posts" => [%{"body" => "body1", "id" => "aa"}]}}, _socket}
-
-      # Subscribe to subscription
-      push_doc(socket, "subscription {
-          postAdded{
-            id
-            body
-            title
-          }
-      }", variables: %{})
-
-      push_doc(socket, "mutation submitPost($title: String, $body: String){
-        submitPost(title: $title, body: $body){
-          id
-          body
-          title
-
-        }
-      }", variables: %{title: "test title", body: "test body"})
-
-    assert_receive_subscription(%{
-      "data" => %{
-        "postAdded" => %{"body" => "test body", "id" => "1", "title" => "test title"}
+  ## Example of synchronous response
+  ```elixir
+  # Push query over socket and receive response
+  push_doc(socket, "query {
+      posts {
+        id
+        body
       }
-    })
+    }", variables: %{limit: 10})
+  {:ok, %{"data" => %{"posts" => [%{"body" => "body1", "id" => "aa"}]}}, _socket}
+  ```
+
+  ## Example of asynchronous response
+  ```
+  # Subscribe to subscription
+  push_doc(socket, "subscription {
+      postAdded{
+        id
+        body
+        title
+      }
+  }", variables: %{})
+
+  # The submitPost mutation triggers the postAdded subscription publication
+  push_doc(socket, "mutation submitPost($title: String, $body: String){
+    submitPost(title: $title, body: $body){
+      id
+      body
+      title
+
+    }
+  }", variables: %{title: "test title", body: "test body"})
+
+  assert_receive_subscription(%{
+    "data" => %{
+      "postAdded" => %{"body" => "test body", "id" => "1", "title" => "test title"}
+    }
+  })
+  ```
   """
   @spec push_doc(socket :: Socket.t(), document :: String.t(), opts :: [{:variables, map}]) ::
           {:ok, Socket.t()} | {:ok, result :: map, Socket.t()}

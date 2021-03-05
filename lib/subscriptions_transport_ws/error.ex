@@ -1,3 +1,3 @@
-defmodule SubscriptionsTransportWs.Error do
+defmodule SubscriptionsTransportWS.Error do
   defexception [:message]
 end

@@ -10,7 +10,7 @@ defmodule SubscriptionsTransportWS.Tests.SocketTest do
 
   @moduletag capture_log: true
   defmodule GraphqlSocket do
-    use SubscriptionsTransportWS.Socket, schema: TestSchema, keep_alive: 10
+    use SubscriptionsTransportWS.Socket, schema: TestSchema, keep_alive: 1000
 
     @impl true
     def connect(params, socket) do
