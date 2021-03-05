@@ -3,8 +3,8 @@
 ## [![Hex pm](http://img.shields.io/hexpm/v/subscriptions-transport-ws.svg?style=flat)](https://hex.pm/packages/subscriptions-transport-ws) [![Hex Docs](https://img.shields.io/badge/hex-docs-9768d1.svg)](https://hexdocs.pm/subscriptions-transport-ws) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)![.github/workflows/elixir.yml](https://github.com/maartenvanvliet/subscriptions-transport-ws/workflows/.github/workflows/elixir.yml/badge.svg)
 <!-- MDOC !-->
 
-Implementation of the subscriptions-transport-ws graphql subscription protocol for Absinthe. Instead of using Absinthe subscriptions over Phoenix channels it exposes a websocket directly. This allows to use
-the Apollo and and Urql Graphql clients without using a translation layer to channels such as `@absinthe/socket`. 
+Implementation of the subscriptions-transport-ws graphql subscription protocol for Absinthe. Instead of using Absinthe subscriptions over Phoenix channels it exposes a websocket directly. This allows you to use
+the Apollo and Urql Graphql clients without using a translation layer to Phoenix channels such as `@absinthe/socket`. 
 
 Has been tested with Apollo iOS and Urql with subscriptions-transport-ws.
 
