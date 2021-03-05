@@ -29,7 +29,7 @@ defmodule SubscriptionsTransportWS.Socket do
     :pubsub_server,
     :endpoint,
     :json_module,
-    keep_alive: 10000,
+    keep_alive: 10_000,
     serializer: Phoenix.Socket.V2.JSONSerializer,
     operations: %{},
     assigns: %{}
