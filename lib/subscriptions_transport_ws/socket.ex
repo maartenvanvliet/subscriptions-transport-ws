@@ -9,6 +9,7 @@ defmodule SubscriptionsTransportWS.Socket do
 
   alias SubscriptionsTransportWS.OperationMessage
   alias __MODULE__
+
   @typedoc """
 
   When using this module there are several options available
@@ -46,7 +47,6 @@ defmodule SubscriptionsTransportWS.Socket do
         }
 
   @initial_keep_alive_wait 1
-
 
   @doc """
   Receives the socket params and authenticates the connection.
