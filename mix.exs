@@ -12,7 +12,8 @@ defmodule SubscriptionsTransportWS.MixProject do
       source_url: @url,
       homepage_url: @url,
       name: "SubscriptionsTransportWS",
-      description: "SubscriptionsTransportWS",
+      description:
+        "Implementation of the subscriptions-transport-ws graphql subscription protocol for Absinthe.",
       package: [
         maintainers: ["Maarten van Vliet"],
         licenses: ["MIT"],
