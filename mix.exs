@@ -21,7 +21,7 @@ defmodule SubscriptionsTransportWS.MixProject do
       ],
       docs: [
         main: "SubscriptionsTransportWS.Socket",
-        canonical: "http://hexdocs.pm/quarto",
+        canonical: "http://hexdocs.pm/subscriptions-transport-ws",
         source_url: @url,
         nest_modules_by_prefix: [SubscriptionsTransportWS]
       ]
