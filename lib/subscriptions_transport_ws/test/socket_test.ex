@@ -65,16 +65,6 @@ defmodule SubscriptionsTransportWS.SocketTest do
   alias SubscriptionsTransportWS.OperationMessage
   alias SubscriptionsTransportWS.Socket
 
-  # defmacro __using__(socket: socket, schema: schema) do
-  #   quote do
-  #     setup_all do
-  #       Absinthe.Test.prime(unquote(schema))
-  #     end
-
-  #     import unquote(__MODULE__)
-  #   end
-  # end
-
   @doc """
   Helper function to build a socket.
 
