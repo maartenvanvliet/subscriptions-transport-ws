@@ -311,7 +311,8 @@ defmodule SubscriptionsTransportWS.Socket do
       |> socket.json_module.encode!
 
     Process.send_after(self(), :keep_alive, socket.keep_alive)
-    {:reply, :ok, {:text, reply}, socket}
+
+    {:push, {:text, reply}, socket}
   end
 
   def __info__({:socket_push, :text, message}, socket) do
@@ -324,7 +325,7 @@ defmodule SubscriptionsTransportWS.Socket do
       |> OperationMessage.as_json()
       |> socket.json_module.encode!
 
-    {:reply, :ok, {:text, reply}, socket}
+    {:push, {:text, reply}, socket}
   end
 
   @doc false

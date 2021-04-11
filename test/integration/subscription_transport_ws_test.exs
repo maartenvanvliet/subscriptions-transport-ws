@@ -230,6 +230,26 @@ defmodule SubscriptionsTransportWS.Integration.SocketTest do
     assert_receive %{"type" => "ka"}
   end
 
+  test "continues to receive keep alive messages" do
+    {:ok, socket} =
+      WebsocketClient.start_link(
+        self(),
+        "ws://127.0.0.1:#{@port}/ws/websocket",
+        @json_module
+      )
+
+    WebsocketClient.send_event(socket, ~s({
+      "type": "connection_init",
+      "payload": {
+        "token": "correct"
+      }
+    }))
+    assert_receive %{"type" => "connection_ack"}
+
+    assert_receive %{"type" => "ka"}
+    assert_receive %{"type" => "ka"}
+  end
+
   test "returns error for invalid graphql document" do
     {:ok, socket} = WebsocketClient.start_link(self(), @path, @json_module)
 

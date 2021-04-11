@@ -25,7 +25,8 @@ defmodule SubscriptionsTransportWS.MixProject do
         canonical: "http://hexdocs.pm/subscriptions-transport-ws",
         source_url: @url,
         nest_modules_by_prefix: [SubscriptionsTransportWS]
-      ]
+      ],
+      dialyzer: dialyzer()
     ]
   end
 
@@ -33,6 +34,15 @@ defmodule SubscriptionsTransportWS.MixProject do
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_add_deps: :apps_direct,
+      plt_add_apps: [:absinthe, :phoenix_pubsub],
+      plt_core_path: "priv/plts",
+      plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
     ]
   end
 
@@ -44,7 +54,8 @@ defmodule SubscriptionsTransportWS.MixProject do
       {:websocket_client, git: "https://github.com/jeremyong/websocket_client.git", only: :test},
       {:plug_cowboy, "~> 2.2", only: :test},
       {:ex_doc, "~> 0.23", only: [:dev, :test]},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 end
