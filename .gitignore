@@ -25,3 +25,7 @@ subscriptions_transport_ws-*.tar
 
 # Temporary files for e.g. tests
 /tmp
+
+# Dialyxir
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
