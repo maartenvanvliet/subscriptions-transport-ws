@@ -18,7 +18,7 @@ defmodule SubscriptionsTransportWS.MixProject do
         maintainers: ["Maarten van Vliet"],
         licenses: ["MIT"],
         links: %{"GitHub" => @url},
-        files: ~w(LICENSE README.md lib mix.exs)
+        files: ~w(LICENSE README.md lib mix.exs .formatter.exs)
       ],
       docs: [
         main: "SubscriptionsTransportWS.Socket",
