@@ -30,7 +30,7 @@ jobs:
       - name: Run tests
         run: mix test  --cover
       - name: Retrieve PLT Cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         id: plt-cache
         with:
           path: priv/plts
