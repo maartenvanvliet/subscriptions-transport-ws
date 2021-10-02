@@ -32,7 +32,8 @@ defmodule SubscriptionsTransportWS.Socket do
     keep_alive: 10_000,
     serializer: Phoenix.Socket.V2.JSONSerializer,
     operations: %{},
-    assigns: %{}
+    assigns: %{},
+    ping_interval: 30_000
   ]
 
   @type t :: %Socket{
@@ -43,8 +44,21 @@ defmodule SubscriptionsTransportWS.Socket do
           serializer: atom,
           json_module: atom,
           operations: map,
-          keep_alive: integer | nil
+          keep_alive: integer | nil,
+          ping_interval: integer | nil
         }
+
+  @type control() ::
+          :ping
+          | :pong
+
+  @type opcode() ::
+          :text
+          | :binary
+          | control()
+
+  @type message() :: binary()
+  @type frame() :: {opcode(), message()}
 
   @initial_keep_alive_wait 1
 
@@ -88,7 +102,11 @@ defmodule SubscriptionsTransportWS.Socket do
   @callback gql_connection_init(connection_params :: map, Socket.t()) ::
               {:ok, Socket.t()} | {:error, any}
 
-  @optional_callbacks connect: 2, connect: 3
+  @callback handle_message(params :: term(), Socket.t()) ::
+              {:ok, Socket.t()}
+              | {:push, frame(), Socket.t()}
+              | {:stop, term(), Socket.t()}
+  @optional_callbacks connect: 2, connect: 3, handle_message: 2
 
   defmacro __using__(opts) do
     quote do
@@ -135,6 +153,10 @@ defmodule SubscriptionsTransportWS.Socket do
       def handle_info(message, socket),
         do: Socket.__info__(message, socket)
 
+      @impl true
+      def handle_control(message, socket),
+        do: Socket.__control__(message, socket)
+
       @doc false
       @impl true
       def terminate(reason, socket),
@@ -152,6 +174,7 @@ defmodule SubscriptionsTransportWS.Socket do
     schema = Keyword.get(socket_options, :schema)
     pipeline = Keyword.get(socket_options, :pipeline)
     keep_alive = Keyword.get(socket_options, :keep_alive)
+    ping_interval = Keyword.get(socket_options, :ping_interval)
 
     case user_connect(
            module,
@@ -159,7 +182,8 @@ defmodule SubscriptionsTransportWS.Socket do
            socket.params,
            socket.connect_info,
            json_module,
-           keep_alive
+           keep_alive,
+           ping_interval
          ) do
       {:ok, socket} ->
         absinthe_config = Map.get(socket.assigns, :absinthe, %{})
@@ -187,14 +211,23 @@ defmodule SubscriptionsTransportWS.Socket do
     end
   end
 
-  defp user_connect(handler, endpoint, params, connect_info, json_module, keep_alive) do
+  defp user_connect(
+         handler,
+         endpoint,
+         params,
+         connect_info,
+         json_module,
+         keep_alive,
+         ping_interval
+       ) do
     if pubsub_server = endpoint.config(:pubsub_server) do
       socket = %SubscriptionsTransportWS.Socket{
         handler: handler,
         endpoint: endpoint,
         pubsub_server: pubsub_server,
         json_module: json_module,
-        keep_alive: keep_alive
+        keep_alive: keep_alive,
+        ping_interval: ping_interval
       }
 
       connect_result =
@@ -303,6 +336,9 @@ defmodule SubscriptionsTransportWS.Socket do
     handle_message(socket, message)
   end
 
+  def __control__({_, opcode: :ping}, socket), do: {:reply, :ok, {:pong, "pong"}, socket}
+  def __control__({_, opcode: :pong}, socket), do: {:ok, socket}
+
   @doc false
   def __info__(:keep_alive, socket) do
     reply =
@@ -313,6 +349,11 @@ defmodule SubscriptionsTransportWS.Socket do
     Process.send_after(self(), :keep_alive, socket.keep_alive)
 
     {:push, {:text, reply}, socket}
+  end
+
+  def __info__(:ping, socket) do
+    Process.send_after(self(), :ping, socket.ping_interval)
+    {:push, {:ping, "ping"}, socket}
   end
 
   def __info__({:socket_push, :text, message}, socket) do
@@ -326,6 +367,14 @@ defmodule SubscriptionsTransportWS.Socket do
       |> socket.json_module.encode!
 
     {:push, {:text, reply}, socket}
+  end
+
+  def __info__(message, socket) do
+    if function_exported?(socket.handler, :handle_message, 2) do
+      socket.handler.handle_message(message, socket)
+    else
+      {:ok, socket}
+    end
   end
 
   @doc false
@@ -346,6 +395,10 @@ defmodule SubscriptionsTransportWS.Socket do
       {:ok, socket} ->
         if socket.keep_alive do
           Process.send_after(self(), :keep_alive, @initial_keep_alive_wait)
+        end
+
+        if socket.ping_interval do
+          Process.send_after(self(), :ping, socket.ping_interval)
         end
 
         reply =
