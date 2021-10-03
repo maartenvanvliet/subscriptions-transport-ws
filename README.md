@@ -78,7 +78,7 @@ In your MyAppWeb.Endpoint module add:
 Now if you start your app you can connect to the socket on `ws://localhost:4000/absinthe-ws/websocket`
 
 ## Example with Apollo JS
-```
+```javascript
 import {
   ApolloClient,
   InMemoryCache,
