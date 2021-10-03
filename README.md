@@ -110,7 +110,50 @@ See the [Urql documentation](https://formidable.com/open-source/urql/docs/advanc
 
 ## Example with Swift
 
-See here https://www.apollographql.com/docs/ios/subscriptions/#subscriptions-and-authorization-tokens
+```swift
+import Apollo
+import ApolloSQLite
+import ApolloWebSocket
+import Foundation
+import Combine
+
+class ApolloService {
+    static let shared = ApolloService()
+    static let url = Config.host.appendingPathComponent("api")
+  
+    private(set) lazy var client: ApolloClient = {
+
+        let store = ApolloStore()
+        
+        let requestChainTransport = RequestChainNetworkTransport(
+            interceptorProvider: DefaultInterceptorProvider(store: store),
+            endpointURL: https://localhost:4000/api
+        )
+        
+        // The Normal Apollo Web Socket Implementation which uses an Apollo adapter server side
+        let wsUrl = "wss://localhost:4000/absinthe-ws/websocket
+        let wsRequest = URLRequest(url: wsUrl)
+        let wsClient = WebSocket(request: wsRequest)
+        let apolloWebSocketTransport =  WebSocketTransport(websocket: wsClient)
+
+        let splitNetworkTransport = SplitNetworkTransport(
+            uploadingNetworkTransport: requestChainTransport,
+            webSocketNetworkTransport: apolloWebSocketTransport
+          )
+
+        // Remember to give the store you already created to the client so it
+        // doesn't create one on its own
+        let client =  ApolloClient(
+            networkTransport: splitNetworkTransport,
+            store: store
+        )
+
+        return client
+    }()
+}
+```
+
+Or see here https://www.apollographql.com/docs/ios/subscriptions/#subscriptions-and-authorization-tokens
 
 <!-- MDOC !-->
 
