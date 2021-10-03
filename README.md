@@ -127,11 +127,11 @@ class ApolloService {
         
         let requestChainTransport = RequestChainNetworkTransport(
             interceptorProvider: DefaultInterceptorProvider(store: store),
-            endpointURL: https://localhost:4000/api
+            endpointURL: "https://localhost:4000/api"
         )
         
         // The Normal Apollo Web Socket Implementation which uses an Apollo adapter server side
-        let wsUrl = "wss://localhost:4000/absinthe-ws/websocket
+        let wsUrl = "wss://localhost:4000/absinthe-ws/websocket"
         let wsRequest = URLRequest(url: wsUrl)
         let wsClient = WebSocket(request: wsRequest)
         let apolloWebSocketTransport =  WebSocketTransport(websocket: wsClient)
