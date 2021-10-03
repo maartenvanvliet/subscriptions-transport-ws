@@ -77,6 +77,48 @@ In your MyAppWeb.Endpoint module add:
 
 Now if you start your app you can connect to the socket on `ws://localhost:4000/absinthe-ws/websocket`
 
+## Example with Apollo JS
+```
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useSubscription,
+} from "@apollo/client";
+import { split, HttpLink } from "@apollo/client";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { WebSocketLink } from "@apollo/client/link/ws";
+
+const wsLink = new WebSocketLink({
+  uri: "ws://localhost:4000/absinthe-ws/websocket",
+  options: {
+    reconnect: true,
+  },
+});
+const httpLink = new HttpLink({
+  uri: "http://localhost:4000/api",
+});
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  httpLink
+);
+
+const client = new ApolloClient({
+  uri: "http://localhost:4000/api",
+  cache: new InMemoryCache(),
+  link: splitLink,
+});
+See the [Apollo documentation](https://www.apollographql.com/docs/react/data/subscriptions/) for more information
+
+```
 ## Example with Urql 
 ```javascript
 import { SubscriptionClient } from "subscriptions-transport-ws";
@@ -108,7 +150,7 @@ const client = new Client({
 ```
 See the [Urql documentation](https://formidable.com/open-source/urql/docs/advanced/subscriptions/#setting-up-subscriptions-transport-ws) for more information.
 
-## Example with Swift
+## Example with Swift Apollo
 
 ```swift
 import Apollo
