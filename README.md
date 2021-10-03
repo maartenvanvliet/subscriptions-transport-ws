@@ -116,9 +116,11 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: splitLink,
 });
+```
+
 See the [Apollo documentation](https://www.apollographql.com/docs/react/data/subscriptions/) for more information
 
-```
+
 ## Example with Urql 
 ```javascript
 import { SubscriptionClient } from "subscriptions-transport-ws";
