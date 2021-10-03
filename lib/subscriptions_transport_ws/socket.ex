@@ -18,6 +18,7 @@ defmodule SubscriptionsTransportWS.Socket do
    * `schema` - refers to the Absinthe schema (required)
    * `pipeline` - refers to the Absinthe pipeline to use, defaults to `{SubscriptionsTransportWS.Socket, :default_pipeline}`
    * `keep_alive` period in ms to send keep alive messages over the socket, defaults to 10000
+   * `ping_interval` period in ms to send keep pings to the client, the client should respond with pong to keep the connection alive
 
   ## Example
 
