@@ -22,7 +22,9 @@ defmodule SubscriptionsTransportWS.Socket do
 
   ## Example
 
-  use SubscriptionsTransportWS.Socket, schema: App.GraphqlSchema, keep_alive: 1000
+  ```elixir
+     use SubscriptionsTransportWS.Socket, schema: App.GraphqlSchema, keep_alive: 1000
+  ```
 
   """
   defstruct [
