@@ -6,12 +6,18 @@
 Implementation of the subscriptions-transport-ws graphql subscription protocol for Absinthe. Instead of using Absinthe subscriptions over Phoenix channels it exposes a websocket directly. This allows you to use
 the Apollo and Urql Graphql clients without using a translation layer to Phoenix channels such as `@absinthe/socket`. 
 
-Has been tested with Apollo iOS and Urql with subscriptions-transport-ws.
+Has been tested with Apollo iOS/ Apollo JS and Urql with subscriptions-transport-ws.
+
+## Subscriptions-Transport-WS vs Graphql-WS
+`subscriptions-transport-ws` is an older [protocol](https://github.com/apollographql/subscriptions-transport-ws). A newer one has been written named [graphql_ws](https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md). The grapqhl_ws protocol is more robust, and the way to go in the future.
+
+At the time of writing the major libraries support one, the other or both. E.g. Apollo Swift currently [only supports](https://github.com/apollographql/apollo-ios/issues/1622#issuecomment-892189145) `subscriptions-transport-ws`, v3 of Apollo Android supports `graphql_ws`. The Urlq/Apollo JS libraries support either one.
+
+If you need to support `graphql_ws` on the backend in Elixir, you can use the [absinthe_graphql_ws](https://github.com/geometerio/absinthe_graphql_ws) library. You can set up multiple websocket endpoints to support both protocols.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `subscriptions_transport_ws` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `subscriptions_transport_ws` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
