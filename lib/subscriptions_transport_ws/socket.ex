@@ -167,9 +167,9 @@ defmodule SubscriptionsTransportWS.Socket do
     end
   end
 
-  def __child_spec__(_module, _opts, _socket_options) do
+  def __child_spec__(module, _opts, _socket_options) do
     # Nothing to do here, so noop.
-    %{id: Task, start: {Task, :start_link, [fn -> :ok end]}, restart: :transient}
+    %{id: {__MODULE__, module}, start: {Task, :start_link, [fn -> :ok end]}, restart: :transient}
   end
 
   def __connect__(module, socket, socket_options) do
