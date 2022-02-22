@@ -13,7 +13,7 @@ jobs:
             check_style: true
     steps:
       - uses: actions/checkout@v2.4.0
-      - uses: erlef/setup-elixir@v1.10
+      - uses: erlef/setup-elixir@v1.11
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
